@@ -100,7 +100,7 @@ namespace FixOCR
             int found = 0;
 
             // Fix : remove bnp message...
-            if (_dates.Count == 0 && fields.Count(f => !string.IsNullOrEmpty(f)) == 1)
+            if (_dates.Count == 0 && _operations.Count == 0 && _valueDates.Count == 0 && _credits.Count == 0 && fields.Count(f => !string.IsNullOrEmpty(f)) == 1)
                 return;
 
             foreach (var field in ParseFields(fields, BnpFields.Date))
