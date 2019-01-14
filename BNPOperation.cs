@@ -36,7 +36,7 @@ namespace FixOCR
 
         private bool TryParseDate(string value, out string result)
         {
-            var cleanDate = value.Replace(" ", "").Replace(".", "");
+            var cleanDate = value.Replace(" ", "").Replace(".", "").Replace('B', '8');
             if (cleanDate.Length != 4)
             {
                 result = string.Empty;

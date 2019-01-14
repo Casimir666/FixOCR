@@ -102,9 +102,10 @@ namespace FixOCR
                     if (line.Count(c => c == ';') != columnNumber)
                         throw new FormatException("Invalid format");
 
-                    var trimLine = line.Replace(" ", "").Replace("\t", "");
+                    var trimLine = line.Replace(" ", "").Replace("\t", "").Replace(";","");
 
-                    if (trimLine.IndexOf("TOTALDESMONTANTS", StringComparison.CurrentCultureIgnoreCase) >= 0 || trimLine.IndexOf("TOTALDESOPERATIONS", StringComparison.CurrentCultureIgnoreCase) >= 0)
+                    if (trimLine.IndexOf("TOTALDESMONTANTS", StringComparison.CurrentCultureIgnoreCase) >= 0 || 
+                        trimLine.IndexOf("TOTALDESOPERATIONS", StringComparison.CurrentCultureIgnoreCase) >= 0)
                     {
                         currentOperations.Dump(output);
 
@@ -112,10 +113,11 @@ namespace FixOCR
                             throw new InvalidOperationException("Invalid end or operations");
                         inside = false;
                     }
-                    else if (trimLine.IndexOf("SOLDECREDITEURAU", StringComparison.CurrentCultureIgnoreCase) >= 0)
+                    else if (trimLine.IndexOf("SOLDECREDITEURAU", StringComparison.CurrentCultureIgnoreCase) >= 0 ||
+                             trimLine.IndexOf("SOLDEDEBITEURAU", StringComparison.CurrentCultureIgnoreCase) >= 0)
                     {
-                        var regex = new Regex(@"(?<Month>\d{1,2}).(?<Day>\d{1,2}).(?<Year>(?:\d{4}|\d{2}))");
-                        var m = regex.Match(line);
+                        var regex = new Regex(@"AU(?<Month>\d{1,2}).(?<Day>\d{1,2}).(?<Year>(?:\d{4}|\d{2}))");
+                        var m = regex.Match(line.Replace(" ", ""));
                         if (!m.Success)
                         {
                             throw new InvalidDataException("");
@@ -129,57 +131,6 @@ namespace FixOCR
                         var fields = line.Split(new[] {';'});
 
                         currentOperations.Process(fields);
-                        /*
-                        switch (fields.Length)
-                        {
-                            case 1:
-                                currentOperations.AppendDescription(fields[0]);
-                                break;
-                            case 2:
-                                currentOperations.AppendDescription(fields[0]);
-                                currentOperations.AddAmount(fields[1]);
-                                break;
-                            case 3:
-                                currentOperations.AddDate(fields[0]);
-                                currentOperations.AddDescription(fields[1]);
-                                currentOperations.AddValueDate(fields[2]);
-                                break;
-                            case 4:
-                                currentOperations.AddDate(fields[0]);
-                                currentOperations.AddDescription(fields[1]);
-                                currentOperations.AddValueDate(fields[2]);
-                                currentOperations.AddAmount(fields[3]);
-                                break;
-                            default:
-                                throw new InvalidOperationException("not expected");
-                        }
-                        */
-                        /*
-                        if (fields.Length == 4)
-                        {
-                            var outline = "";
-                            for (int i = 0; i < fields.Length; i++)
-                            {
-                                if (i == 0)
-                                    outline = FixBNPFields(fields[i], i, currentYear);
-                                else
-                                    outline = outline + outSep + FixBNPFields(fields[i], i, currentYear);
-                            }
-
-                            output.WriteLine(outline);
-                        }
-                        else if (fields.Length == 1)
-                        {
-
-                        }
-                        else if (fields.Length == 2)
-                        {
-
-                        }
-                        else
-                        {
-
-                        }*/
                     }
 
                     if (trimLine.IndexOf("Naturedesopérations", StringComparison.CurrentCultureIgnoreCase) >= 0)
